@@ -1,4 +1,4 @@
-const fruits = [
+let fruits = [
   {id: 1, title: 'Яблоки', price: 20, img: 'https://lifeglobe.net/x/entry/6259/1a-0.jpg'},
   {id: 2, title: 'Апельсины', price: 30, img: 'https://bipbap.ru/wp-content/uploads/2018/07/apelsini.jpg'},
   {id: 3, title: 'Манго', price: 40, img: 'https://st.depositphotos.com/3260227/4344/i/950/depositphotos_43441807-stock-photo-mango-fruit.jpg'}
@@ -11,7 +11,7 @@ const toHTML = fruit => `
       <div class="card-body">
         <h5 class="card-title">${fruit.title}</h5>
         <a href="#" class="btn btn-primary" data-btn="price" data-id="${fruit.id}">Посмотреть цену</a>
-        <a href="#" class="btn btn-danger">Удалить</a>
+        <a href="#" class="btn btn-danger" data-btn="remove" data-id="${fruit.id}">Удалить</a>
       </div>
     </div>
   </div>
@@ -40,13 +40,22 @@ document.addEventListener('click', event => {
   event.preventDefault()
   const btnType = event.target.dataset.btn
   const id = +event.target.dataset.id
-  
+  const fruit = fruits.find(f => f.id === id)
   if (btnType === 'price') {
-    const fruit = fruits.find(f => f.id === id)
     priceModal.setContent(`
       <p>Цена на ${fruit.title}: <strong>${fruit.price}$</strong></p>
     `)
     priceModal.open()
     console.log(fruit)
+  } else if (btnType === 'remove') {
+    $.confirm({
+      title: 'Вы уверены?',
+      content: `<p>Вы удаляете фрукт: <strong>${fruit.title}</strong></p>`
+    }).then(() => {
+      fruits = fruits.filter(f => f.id !== id)
+      render()
+    }).catch(() => {
+      console.log('cancel')
+    })
   }
 })
